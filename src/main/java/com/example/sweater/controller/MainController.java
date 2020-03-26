@@ -30,9 +30,20 @@ http://localhost:8080/
     */
     //http://localhost:8080/main
     @GetMapping("/main")
-    public String main(Map<String, Object> model) {
+    public String main(@RequestParam(required = false) String filter,
+            Model model) {
         Iterable<Message> messages =  messageRepo.findAll();
-        model.put("messages", messages);
+
+        if(filter != null && !filter.isEmpty()) {
+            messages = messageRepo.findByTag(filter); //возвращает List
+        } else {
+            messages = messageRepo.findAll(); //возвращает Iterable
+        }
+
+
+        model.addAttribute("messages", messages);
+        model.addAttribute("filter", filter);
+
 
         return "main"; //main.mustache
     }
@@ -53,23 +64,5 @@ http://localhost:8080/
 
         return "main";
     }
-
-    @PostMapping("filter")
-    public String filter(@RequestParam String filter, Map<String, Object> model) {
-            Iterable<Message> messages; // List имплементирует интерфейс Iterable
-
-            if(filter != null && !filter.isEmpty()) {
-                messages = messageRepo.findByTag(filter); //возвращает List
-            } else {
-                messages = messageRepo.findAll(); //возвращает Iterable
-            }
-            model.put("messages", messages);
-
-
-        return "main";
-    }
-
-
-
 
 }
