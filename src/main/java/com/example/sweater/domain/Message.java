@@ -1,11 +1,10 @@
 package com.example.sweater.domain;
 
+import org.hibernate.annotations.ManyToAny;
+
 import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Message implements Serializable {
@@ -17,6 +16,8 @@ public class Message implements Serializable {
     private String text;
     private String tag;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
     private User author;
 
     public User getAuthor() {
@@ -30,10 +31,21 @@ public class Message implements Serializable {
     public Message() {
     }
 
-    public Message(String text, String tag) {
+    public Message(String text, String tag, User user) {
+        this.author = user;
         this.text = text;
         this.tag = tag;
+
     }
+
+    //Все методы getSomething могут быть заменены на обращение к
+    //полю (даже если оно не существует) с именем something. Это из groovy
+    public String getAuthorName() {
+        return author != null ? author.getUsername() : "<none>";
+    }
+
+
+
 
     public Long getId() {
         return id;
